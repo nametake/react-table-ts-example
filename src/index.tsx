@@ -1,16 +1,72 @@
-import * as React from "react";
-import { render } from "react-dom";
+import * as React from 'react';
+import { render } from 'react-dom';
 
-import "./styles.css";
+import { useTable, Column } from 'react-table';
+
+import './styles.css';
+
+const columns: Column<Data>[] = [
+  {
+    Header: '名前',
+    accessor: 'name'
+  },
+  {
+    Header: '年齢',
+    accessor: 'age'
+  }
+];
+
+interface Data {
+  name: string;
+  age: number;
+}
+
+const data: Data[] = [
+  {
+    name: 'John',
+    age: 23
+  },
+  {
+    name: 'Jane',
+    age: 26
+  }
+];
 
 function App() {
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow
+  } = useTable<Data>({ columns, data });
+
   return (
-    <div className="App">
-      <h1>Hello CodeSandbox</h1>
-      <h2>Start editing to see some magic happen!</h2>
-    </div>
+    <table {...getTableProps()}>
+      <thead>
+        {headerGroups.map(headerGroup => (
+          <tr {...headerGroup.getHeaderGroupProps()}>
+            {headerGroup.headers.map(column => (
+              <th {...column.getHeaderProps()}>{column.render('Header')}</th>
+            ))}
+          </tr>
+        ))}
+      </thead>
+      <tbody {...getTableBodyProps()}>
+        {rows.map((row, i) => {
+          prepareRow(row);
+          return (
+            <tr {...row.getRowProps()}>
+              {row.cells.map(cell => {
+                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
+              })}
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
   );
 }
 
-const rootElement = document.getElementById("root");
+const rootElement = document.getElementById('root');
 render(<App />, rootElement);
